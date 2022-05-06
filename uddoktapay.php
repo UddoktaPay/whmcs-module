@@ -50,6 +50,24 @@ function uddoktapay_config()
 
 function uddoktapay_link($params)
 {
+
+    if (isset($_POST['submit'])) {
+        $response = payment_url($params);
+        if (empty($response->payment_url)) {
+            return 'Invalid Domain License.';
+        } else {
+            header("Location: {$response->payment_url}");
+            exit();
+        }
+    }
+
+    return '<form method="post">
+        <input class="btn btn-primary" type="submit" name="submit" value="' . $params['langpaynow'] . '" />
+        </form>';
+}
+
+function payment_url($params)
+{
     // UuddoktaPay Gateway Specific Settings
     $api_url = $params['apiUrl'];
 
@@ -105,8 +123,6 @@ function uddoktapay_link($params)
 
     $response = curl_exec($ch);
     curl_close($ch);
-    $result = json_decode($response, true);
-    return '<form method="get" action="' . $result['payment_url'] . '">
-        <input class="btn btn-primary" type="submit" value="' . $params['langpaynow'] . '" />
-        </form>';
+    $result = json_decode($response);
+    return $result;
 }
