@@ -23,11 +23,8 @@ function uddoktapay_MetaData()
     );
 }
 
-function uddoktapay_config($params)
+function uddoktapay_config()
 {
-    // System Parameters
-    $systemUrl = $params['systemurl'];
-    $moduleName = $params['paymentmethod'];
     return array(
         'FriendlyName' => array(
             'Type' => 'System',
@@ -36,14 +33,14 @@ function uddoktapay_config($params)
         'apiKey' => array(
             'FriendlyName' => 'API Key',
             'Type' => 'text',
-            'Size' => '50',
+            'Size' => '60',
             'Default' => '',
             'Description' => 'Get API key from your panel',
         ),
         'apiUrl' => array(
             'FriendlyName' => 'API URL',
             'Type' => 'text',
-            'Size' => '50',
+            'Size' => '255',
             'Default' => '',
             'Description' => 'Get API URL from your panel',
         )
@@ -102,7 +99,8 @@ function uddoktapay_link($params)
     curl_setopt($ch, CURLOPT_URL, $api_url);
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postfields));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
     $response = curl_exec($ch);
