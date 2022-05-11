@@ -51,18 +51,13 @@ function uddoktapay_config()
 function uddoktapay_link($params)
 {
 
-    if (isset($_POST['submit'])) {
-        $response = payment_url($params);
-        if (empty($response->payment_url)) {
-            return 'Invalid Domain License.';
-        } else {
-            header("Location: {$response->payment_url}");
-            exit();
-        }
+    $response = payment_url($params);
+    if (empty($response->payment_url)) {
+        return 'Invalid Domain License.';
     }
 
-    return '<form method="post">
-        <input class="btn btn-primary" type="submit" name="submit" value="' . $params['langpaynow'] . '" />
+    return '<form action="' . $response->payment_url . ' " method="GET">
+        <input class="btn btn-primary" type="submit" value="' . $params['langpaynow'] . '" />
         </form>';
 }
 
