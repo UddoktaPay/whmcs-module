@@ -51,17 +51,17 @@ function uddoktapay_config()
 function uddoktapay_link($params)
 {
 
-    $response = payment_url($params);
-    if (empty($response->payment_url)) {
-        return 'Invalid Domain License.';
-    }
-
-    return '<form action="' . $response->payment_url . ' " method="GET">
+    $response = uddoktapay_payment_url($params);
+    if ($response->status) {
+        return '<form action="' . $response->payment_url . ' " method="GET">
         <input class="btn btn-primary" type="submit" value="' . $params['langpaynow'] . '" />
         </form>';
+    }
+
+    return $response->message;
 }
 
-function payment_url($params)
+function uddoktapay_payment_url($params)
 {
     // UuddoktaPay Gateway Specific Settings
     $api_url = $params['apiUrl'];
@@ -82,9 +82,9 @@ function payment_url($params)
     $systemUrl = $params['systemurl'];
     $moduleName = $params['paymentmethod'];
 
-    $returnUrl = $params['returnurl'];
-    $cancelUrl = $params['returnurl'];
-    $webhookUrl = $systemUrl . 'modules/gateways/callback/' . $moduleName . '.php';
+    $returnUrl = uddoktapay_get_url($systemUrl) . '/viewinvoice.php?id=' . $invoiceId;
+    $cancelUrl = uddoktapay_get_url($systemUrl) . '/viewinvoice.php?id=' . $invoiceId;
+    $webhookUrl = uddoktapay_get_url($systemUrl) . '/modules/gateways/callback/uddoktapay.php';
 
     $metaData = [
         'invoice_id' => $invoiceId,
@@ -120,4 +120,15 @@ function payment_url($params)
     curl_close($ch);
     $result = json_decode($response);
     return $result;
+}
+
+function uddoktapay_get_url($input)
+{
+    $input = trim($input);
+    if (!preg_match('#^http(s)?://#', $input)) {
+        $input = 'https://' . $input;
+    }
+    $urlHost = parse_url($input, PHP_URL_HOST);
+    $domain = preg_replace('/^www\./', '', $urlHost);
+    return 'https://' . $domain;
 }
