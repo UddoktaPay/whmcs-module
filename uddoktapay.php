@@ -17,7 +17,7 @@ function uddoktapay_MetaData()
 {
     return array(
         'DisplayName' => 'UddoktaPay Gateway',
-        'APIVersion' => '1.0.0',
+        'APIVersion' => '1.0',
         'DisableLocalCredtCardInput' => true,
         'TokenisedStorage' => false,
     );
@@ -82,9 +82,9 @@ function uddoktapay_payment_url($params)
     $systemUrl = $params['systemurl'];
     $moduleName = $params['paymentmethod'];
 
-    $returnUrl = uddoktapay_get_url($systemUrl) . '/viewinvoice.php?id=' . $invoiceId;
-    $cancelUrl = uddoktapay_get_url($systemUrl) . '/viewinvoice.php?id=' . $invoiceId;
-    $webhookUrl = uddoktapay_get_url($systemUrl) . '/modules/gateways/callback/uddoktapay.php';
+    $returnUrl = $systemUrl . 'viewinvoice.php?id=' . $invoiceId;
+    $cancelUrl = $systemUrl . 'viewinvoice.php?id=' . $invoiceId;
+    $webhookUrl = $systemUrl . 'modules/gateways/callback/uddoktapay.php';
 
     $metaData = [
         'invoice_id' => $invoiceId,
@@ -120,15 +120,4 @@ function uddoktapay_payment_url($params)
     curl_close($ch);
     $result = json_decode($response);
     return $result;
-}
-
-function uddoktapay_get_url($input)
-{
-    $input = trim($input);
-    if (!preg_match('#^http(s)?://#', $input)) {
-        $input = 'https://' . $input;
-    }
-    $urlHost = parse_url($input, PHP_URL_HOST);
-    $domain = preg_replace('/^www\./', '', $urlHost);
-    return 'https://' . $domain;
 }
